@@ -1,0 +1,11 @@
+{
+  "name": "LookAroundCore.Runtime",
+  "references": [
+    "Unity.Engine",
+    "Unity.TextMeshPro",
+    "UnityEngine.UI",
+    "Siccity.GLTFUtility",
+    "Newtonsoft.JSON"
+  ],
+  "autoReferenced": true
+}
