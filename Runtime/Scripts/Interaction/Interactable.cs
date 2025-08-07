@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-
 public abstract class Interactable : Hoverable
 {
     // Start is called before the first frame update
@@ -17,6 +16,6 @@ public abstract class Interactable : Hoverable
 
     public void Interact()
     {
-        OnInteract?.Invoke();
+        OnInteract.Invoke();
     }
 }

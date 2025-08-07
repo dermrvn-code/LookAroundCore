@@ -1,4 +1,3 @@
-
 public class SceneElementText : SceneElement
 {
     public string text;

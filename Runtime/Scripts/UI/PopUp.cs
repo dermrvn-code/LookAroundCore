@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-
 public class PopUp : MonoBehaviour
 {
     public TMP_Text messageText;
@@ -19,4 +18,3 @@ public class PopUp : MonoBehaviour
         Destroy(gameObject);
     }
 }
-

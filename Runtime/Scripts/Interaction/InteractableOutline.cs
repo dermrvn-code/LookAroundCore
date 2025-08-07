@@ -1,5 +1,5 @@
-using UnityEngine;
 
+using UnityEngine;
 
 public class InteractableOutline : Interactable
 {
@@ -25,4 +25,3 @@ public class InteractableOutline : Interactable
         outline.enabled = false;
     }
 }
-

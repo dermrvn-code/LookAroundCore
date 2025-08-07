@@ -7,8 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Video;
 
-
-
 public class SceneChanger : MonoBehaviour
 {
     public GameObject particlesGameobject;

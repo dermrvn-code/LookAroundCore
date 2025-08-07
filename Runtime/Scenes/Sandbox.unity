@@ -7141,7 +7141,7 @@ MonoBehaviour:
   eyes: {fileID: 1269589985}
   settings: {fileID: 688745041}
   interaction: {fileID: 1269589987}
-  sc: {fileID: 0}
+  sc: {fileID: 563261372}
 --- !u!4 &563261371
 Transform:
   m_ObjectHideFlags: 0
@@ -7178,7 +7178,7 @@ MonoBehaviour:
   vp: {fileID: 746021988}
   textPrefab: {fileID: 9013191144005033382, guid: cd90eaf584e299748a601ff093617a41, type: 3}
   textboxPrefab: {fileID: 7724541756597076768, guid: 38e330525c0b1674d93630885b7d7696, type: 3}
-  info: {fileID: 21300000, guid: ed9cea97389bac04686bfb48572e3543, type: 3}
+  info: {fileID: 21300000, guid: dd768700f43de964785ecbb279a6b0de, type: 3}
   warning: {fileID: 21300000, guid: b98b554830b8c9e4b9c59cbbb4e327ec, type: 3}
   question: {fileID: 21300000, guid: 3d0eec53afb40eb4899ef113e77cfda3, type: 3}
   play: {fileID: 21300000, guid: f62f3d068a9921a48abbb787681ecceb, type: 3}
@@ -7268,7 +7268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e51645bdf9259b4a9ccd7cbe174c8c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logoDefault: {fileID: 0}
+  logoDefault: {fileID: 2800000, guid: 2bc4bd6dbcc1ac644a5cc137a13e5d10, type: 3}
   colorDefault: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &659339924
 PrefabInstance:
@@ -9938,7 +9938,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 0
+  m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &1551991070
@@ -10103,7 +10103,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 0
+  m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &1639258588

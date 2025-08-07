@@ -6,7 +6,6 @@ using System.IO.Ports;
 using TMPro;
 using System.Text;
 
-
 [ExecuteInEditMode]
 public class SpriteHolder : MonoBehaviour
 {
@@ -35,4 +34,3 @@ public class SpriteHolder : MonoBehaviour
 
     }
 }
-

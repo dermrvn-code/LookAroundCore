@@ -2,7 +2,6 @@
 using TMPro;
 using UnityEngine;
 
-
 public class InteractableArrow : Interactable
 {
     [SerializeField]

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class EyesHandler : MonoBehaviour
 {
 
@@ -162,4 +161,3 @@ public class EyesHandler : MonoBehaviour
         PlayerPrefs.Save();
     }
 }
-

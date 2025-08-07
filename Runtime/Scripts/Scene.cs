@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-
-
 public class Scene
 {
     public enum MediaType { Video, Photo };
@@ -59,4 +57,3 @@ public class Scene
         return "Scene '" + Name + "' of type '" + Type.ToString() + "' and source '" + Source + "'";
     }
 }
-

@@ -101,7 +101,7 @@ public class TextureManager : MonoBehaviour
 
     private IEnumerator LoadTextureAsync(string filePath, Action<Texture2D> onLoaded)
     {
-        if (File.Exists(filePath))
+        if (System.IO.File.Exists(filePath))
         {
             using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture("file://" + filePath))
             {
@@ -114,15 +114,8 @@ public class TextureManager : MonoBehaviour
                 }
                 else
                 {
-                    Texture2D rawTexture = DownloadHandlerTexture.GetContent(uwr);
-                    if (rawTexture == null)
-                    {
-                        Debug.LogError("Failed to create texture from downloaded content.");
-                        onLoaded?.Invoke(null);
-                        yield break;
-                    }
-                    FixTexture(rawTexture, out Texture2D fixedTexture);
-                    onLoaded?.Invoke(fixedTexture);
+                    Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+                    onLoaded?.Invoke(FixTexture(texture));
                 }
             }
         }
@@ -133,27 +126,26 @@ public class TextureManager : MonoBehaviour
         }
     }
 
-    // SINCE UNITY 6, THE STANDARD TEXTURE FORMAT FROM UWR DOESNT WORK ANYMORE
-    public void FixTexture(Texture2D sourceTexture, out Texture2D fixedTexture)
+    public Texture2D FixTexture(Texture2D sourceTexture)
     {
-        // Create a new texture without mipmaps
-        fixedTexture = new Texture2D(
+        if (sourceTexture == null)
+        {
+            Debug.LogError("Source texture is null");
+            return null;
+        }
+        Texture2D fixedTexture = new Texture2D(
             sourceTexture.width,
             sourceTexture.height,
             TextureFormat.RGBA32,
             mipChain: false
         );
 
-        // Copy pixel data
         fixedTexture.SetPixels(sourceTexture.GetPixels());
-
-        // Set recommended texture settings
-        fixedTexture.wrapMode = TextureWrapMode.Clamp;       // Avoid seams at edges
-        fixedTexture.filterMode = FilterMode.Trilinear;      // Higher quality filtering
-        fixedTexture.anisoLevel = 9;                         // Improve edge clarity
-
-        // Apply changes and upload to GPU
-        fixedTexture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+        fixedTexture.wrapMode = TextureWrapMode.Clamp;
+        fixedTexture.filterMode = FilterMode.Trilinear;
+        fixedTexture.anisoLevel = 9;
+        fixedTexture.Apply(false, false);
+        return fixedTexture;
     }
 
 
@@ -185,4 +177,3 @@ public class TextureManager : MonoBehaviour
         maxMemoryUsageMB = (int)value;
     }
 }
-

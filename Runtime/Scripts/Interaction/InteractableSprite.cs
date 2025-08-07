@@ -2,7 +2,6 @@
 using TMPro;
 using UnityEngine;
 
-
 public class InteractableSprite : Interactable
 {
     private Animation anim;
@@ -51,4 +50,3 @@ public class InteractableSprite : Interactable
         anim.enabled = false;
     }
 }
-

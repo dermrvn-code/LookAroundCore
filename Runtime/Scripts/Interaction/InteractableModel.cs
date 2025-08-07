@@ -2,7 +2,6 @@
 using TMPro;
 using UnityEngine;
 
-
 public class InteractableModel : Interactable
 {
     // Start is called before the first frame update

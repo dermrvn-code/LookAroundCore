@@ -1,4 +1,3 @@
-
 public class SceneElementSprite : SceneElement
 {
     public string path;

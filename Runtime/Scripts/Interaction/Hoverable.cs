@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-
 public abstract class Hoverable : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -20,4 +19,3 @@ public abstract class Hoverable : MonoBehaviour
     public abstract void Unhighlight();
 
 }
-

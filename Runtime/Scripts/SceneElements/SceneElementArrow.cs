@@ -1,4 +1,3 @@
-
 public class SceneElementArrow : SceneElement
 {
     public int rotation;

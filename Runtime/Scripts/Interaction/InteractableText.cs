@@ -2,7 +2,6 @@
 using TMPro;
 using UnityEngine;
 
-
 public class InteractableText : Interactable
 {
     // Start is called before the first frame update

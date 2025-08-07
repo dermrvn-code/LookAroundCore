@@ -5,13 +5,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-
 public class SliderText : MonoBehaviour
 {
 
+
     public Slider slider;
     public TMP_Text text;
+
 
     private void Start()
     {
@@ -22,5 +22,7 @@ public class SliderText : MonoBehaviour
     {
         text.text = Math.Round(value, 2).ToString();
     }
-}
 
+
+
+}

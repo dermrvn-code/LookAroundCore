@@ -9,8 +9,6 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections;
 
-
-
 public class SerialManager : MonoBehaviour
 {
     public EyesHandler eyes;
@@ -242,4 +240,3 @@ public class SerialManager : MonoBehaviour
         Disconnect();
     }
 }
-

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-
 public class TextBox : Hoverable
 {
     [SerializeField]
@@ -70,8 +69,7 @@ public class TextBox : Hoverable
         StartCoroutine(Fade(icon, textColor, Color.clear));
         StartCoroutine(Scale(background.transform, closedScale, backgroundScale));
         yield return new WaitForSeconds(100 * 0.005f);
-        if (stayOpen)
-        {
+        if(stayOpen){
             StartCoroutine(Fade(tmptext, Color.clear, textColor));
         }
     }
@@ -80,8 +78,7 @@ public class TextBox : Hoverable
     {
         StartCoroutine(Fade(tmptext, textColor, Color.clear));
         yield return new WaitForSeconds(100 * 0.005f);
-        if (stayClosed)
-        {
+        if(stayClosed){
             StartCoroutine(Scale(background.transform, backgroundScale, closedScale));
             StartCoroutine(Fade(icon, Color.clear, textColor));
         }
@@ -115,4 +112,3 @@ public class TextBox : Hoverable
     }
 
 }
-

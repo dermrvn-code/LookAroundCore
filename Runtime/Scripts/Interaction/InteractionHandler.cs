@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-
 public class InteractionHandler : MonoBehaviour
 {
 
@@ -110,4 +109,3 @@ public class InteractionHandler : MonoBehaviour
         }
     }
 }
-
