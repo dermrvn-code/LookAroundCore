@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class InteractionHandler : MonoBehaviour
+public abstract class InteractionHandlerBase : MonoBehaviour
 {
 
     Hoverable target;

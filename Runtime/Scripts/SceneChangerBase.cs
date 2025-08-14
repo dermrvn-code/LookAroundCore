@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Video;
 
-public abstract class SceneChanger : MonoBehaviour
+public abstract class SceneChangerBase : MonoBehaviour
 {
     public GameObject particlesGameobject;
     ParticleSystem particles;
@@ -19,12 +19,12 @@ public abstract class SceneChanger : MonoBehaviour
     [SerializeField] GameObject sceneElementsContainer;
     [SerializeField] VideoPlayer videoPlayer;
 
-    protected SceneManager sceneManager;
-    protected InteractionHandler interactionHandler;
+    protected SceneManagerBase sceneManager;
+    protected InteractionHandlerBase interactionHandler;
     protected TextureManager textureManager;
     protected LogoLoadingOverlay loadingOverlay;
     protected SpriteManager spriteManager;
-    protected ModelManager modelManager;
+    protected ModelManagerBase modelManager;
 
     Scene currentScene;
 
@@ -39,10 +39,10 @@ public abstract class SceneChanger : MonoBehaviour
 
     void Start()
     {
-        sceneManager = FindFirstObjectByType<SceneManager>();
-        interactionHandler = FindFirstObjectByType<InteractionHandler>();
+        sceneManager = FindFirstObjectByType<SceneManagerBase>();
+        interactionHandler = FindFirstObjectByType<InteractionHandlerBase>();
         textureManager = FindFirstObjectByType<TextureManager>();
-        modelManager = FindFirstObjectByType<ModelManager>();
+        modelManager = FindFirstObjectByType<ModelManagerBase>();
         loadingOverlay = FindFirstObjectByType<LogoLoadingOverlay>();
         spriteManager = FindFirstObjectByType<SpriteManager>();
 
@@ -111,7 +111,7 @@ public abstract class SceneChanger : MonoBehaviour
         if (scene == null || scene == currentScene) return;
 
         currentScene = scene;
-        LoadSceneElements(scene.SceneElements);
+        LoadSceneElements(new List<SceneElement>(scene.SceneElements.Values));
         if (interactionHandler != null)
             interactionHandler.updateElementsNextFrame = true;
 

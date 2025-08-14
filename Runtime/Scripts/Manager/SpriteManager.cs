@@ -71,6 +71,17 @@ public class SpriteManager : MonoBehaviour
         return sceneSprites[index].texture;
     }
 
+    public string GetPath(int index)
+    {
+        if (index < 0 || index >= sceneSprites.Length)
+        {
+            Debug.LogError("Index out of bounds for sceneSprites array.");
+            return null;
+        }
+
+        return sceneSprites[index].path;
+    }
+
     public void UnloadSprite(int index)
     {
         if (index < 0 || index >= sceneSprites.Length)

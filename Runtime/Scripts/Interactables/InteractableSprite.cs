@@ -6,6 +6,7 @@ public class InteractableSprite : Interactable
 {
     private Animation anim;
     public Texture2D texture;
+    public int id;
 
     MeshRenderer meshRenderer;
 
@@ -24,8 +25,9 @@ public class InteractableSprite : Interactable
         Unhighlight();
     }
 
-    void SetImage(Texture2D texture)
+    public void SetImage(Texture2D newTexture)
     {
+        texture = newTexture;
         if (meshRenderer != null && meshRenderer.material != null)
         {
             meshRenderer.material = new Material(meshRenderer.material);

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
 
-public abstract class SceneManager : MonoBehaviour
+public abstract class SceneManagerBase : MonoBehaviour
 {
 
-    protected SceneChanger sceneChanger;
+    protected SceneChangerBase sceneChanger;
     protected TextureManager textureManager;
-    protected ModelManager modelManager;
+    protected ModelManagerBase modelManager;
 
     protected XDocument worldOverview;
     protected XDocument scenesOverview;
@@ -21,9 +21,9 @@ public abstract class SceneManager : MonoBehaviour
 
     void Start()
     {
-        sceneChanger = FindFirstObjectByType<SceneChanger>();
+        sceneChanger = FindFirstObjectByType<SceneChangerBase>();
         textureManager = FindFirstObjectByType<TextureManager>();
-        modelManager = FindFirstObjectByType<ModelManager>();
+        modelManager = FindFirstObjectByType<ModelManagerBase>();
         progressBar = FindFirstObjectByType<ProgressBar>();
         spriteManager = FindFirstObjectByType<SpriteManager>();
 
@@ -240,8 +240,9 @@ public abstract class SceneManager : MonoBehaviour
 
         var elements = sceneTag.Descendants("Element");
 
-        var sceneElements = new List<SceneElement>();
+        var sceneElements = new Dictionary<int, SceneElement>();
 
+        int elementId = 0;
         foreach (var element in elements)
         {
             string elementType = element.Attribute("type").Value.ToLower();
@@ -349,7 +350,8 @@ public abstract class SceneManager : MonoBehaviour
             }
             if (se != null)
             {
-                sceneElements.Add(se);
+                sceneElements.Add(elementId, se);
+                elementId++;
             }
         }
         Scene sceneObj = new Scene(type == "video" ? Scene.MediaType.Video : Scene.MediaType.Photo, sceneName, source, sceneElements, isStartScene, xOffset, yOffset);
@@ -374,6 +376,53 @@ public abstract class SceneManager : MonoBehaviour
             return element.Attribute(attributeName).Value;
         }
         return defaultValue;
+    }
+
+    public Scene GetStartScene()
+    {
+        foreach (var scene in sceneList.Values)
+        {
+            if (scene.IsStartScene)
+            {
+                return scene;
+            }
+        }
+        return null;
+    }
+
+    public void SetStartScene(string sceneName = "", string sceneNameAvoid = "")
+    {
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            if (sceneList.ContainsKey(sceneName))
+            {
+                foreach (var scene in sceneList.Values)
+                {
+                    scene.SetStartScene(false); // Reset all scenes
+                }
+                sceneList[sceneName].SetStartScene(true); // Set the specified scene as start scene
+            }
+            else
+            {
+                Debug.LogWarning("Scene not found: " + sceneName);
+            }
+        }
+        else
+        {
+            foreach (var scene in sceneList.Values)
+            {
+                scene.SetStartScene(false); // Reset all scenes
+            }
+
+            sceneList.FirstOrDefault(x => x.Key != sceneNameAvoid).Value?.SetStartScene(true);
+        }
+
+
+    }
+    void OnDestroy()
+    {
+        // Release all textures when done
+        textureManager.ReleaseAllTextures();
     }
 
 }

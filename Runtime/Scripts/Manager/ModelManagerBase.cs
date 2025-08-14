@@ -6,22 +6,22 @@ using Siccity.GLTFUtility;
 using UnityEngine.Events;
 
 
-public class ModelManager : MonoBehaviour
+public abstract class ModelManagerBase : MonoBehaviour
 {
     [SerializeField]
-    int maxModels = 8;
+    protected int maxModels = 8;
 
     [SerializeField]
-    Dictionary<string, GameObject> loadedModels = new Dictionary<string, GameObject>();
+    protected Dictionary<string, GameObject> loadedModels = new Dictionary<string, GameObject>();
 
     [SerializeField]
-    GameObject sceneElementsContainer;
+    protected GameObject sceneElementsContainer;
 
     [SerializeField]
-    GameObject siding;
+    protected GameObject siding;
 
     [SerializeField]
-    Renderer domeRenderer;
+    protected Renderer domeRenderer;
 
 
     void Start()
@@ -39,7 +39,7 @@ public class ModelManager : MonoBehaviour
 
 
     [SerializeField]
-    InteractableModel containerPrefab;
+    protected InteractableModel containerPrefab;
     public DomePosition DisplayModel(string modelName)
     {
         if (loadedModels.TryGetValue(modelName, out GameObject model))
