@@ -36,7 +36,7 @@ public abstract class SceneChangerBase : MonoBehaviour
     protected Sprite info, warning, question, play;
 
 
-    public virtual void Start()
+    public virtual void Awake()
     {
         sceneManager = FindFirstObjectByType<SceneManagerBase>();
         interactionHandler = FindFirstObjectByType<InteractionHandler>();
