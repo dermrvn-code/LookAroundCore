@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5989287706789979100}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.2079077, y: 0.0060604843, z: 0.0012881957, w: 0.97812885}
-  m_LocalPosition: {x: 0.14867559, y: -0.20942885, z: 11.9972515}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -43,12 +43,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5989287706789979100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d45b7aa7ca3ca98419457598cc73e0dc, type: 3}
+  m_Script: {fileID: 11500000, guid: 091d9467b43e0224e82c11a0a9f0c7a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: 0.71, y: 1}
-  distance: 12
-  xRotOffset: -25
+  OnInteract:
+    m_PersistentCalls:
+      m_Calls: []
+  arrow: {fileID: 7512904860044761502}
+  color: {r: 0, g: 0, b: 0, a: 0}
+  hoverColor: {r: 0, g: 0, b: 0, a: 0}
+  rotation: 0
 --- !u!114 &7011297755261889822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,15 +62,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5989287706789979100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10eb6f3891f88ca49bc0510bbbac2d42, type: 3}
+  m_Script: {fileID: 11500000, guid: f22bbfd05ec124c49b348cf5bdad57f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnInteract:
-    m_PersistentCalls:
-      m_Calls: []
-  arrow: {fileID: 7512904860044761502}
-  color: {r: 0, g: 0, b: 0, a: 1}
-  hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  position: {x: 0, y: 0}
+  distance: 10
+  xRotOffset: 0
 --- !u!1 &7512904860044761502
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,10 +126,13 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ccf7457315b65524599619c35a525144, type: 2}
+  - {fileID: 2100000, guid: 9000c609120348b4aa4a2e78316d3d3b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -191,11 +195,13 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9185241545927110266}
   m_Enabled: 0
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 3863bf34a93f5794e88a0e2ee8020b25, type: 2}
+  serializedVersion: 4
+  m_Animation: {fileID: 7400000, guid: 9c0e419356dc9e3478b40eaa813bd2e6, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 3863bf34a93f5794e88a0e2ee8020b25, type: 2}
+  - {fileID: 7400000, guid: 9c0e419356dc9e3478b40eaa813bd2e6, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0

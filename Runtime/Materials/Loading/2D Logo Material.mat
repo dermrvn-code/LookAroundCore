@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 2D Logo Material
-  m_Shader: {fileID: 4800000, guid: c3546f3a75bdf0b45a3cad811d0fd742, type: 3}
+  m_Shader: {fileID: 4800000, guid: 1c05be5740d803d408306011d88f497a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -49,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 2bc4bd6dbcc1ac644a5cc137a13e5d10, type: 3}
+        m_Texture: {fileID: 2800000, guid: 73caf884396c612419f95a77b6e71d25, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -104,3 +104,4 @@ Material:
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

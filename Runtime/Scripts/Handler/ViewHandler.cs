@@ -19,25 +19,17 @@ public abstract class ViewHandler : MonoBehaviour
     protected float currentZoom;
     protected float zoomVelocity = 0.0f;
 
-    protected virtual void Awake()
+    public virtual void Update()
     {
-        _Awake();
-    }
-
-    protected virtual void Update()
-    {
-        _Update();
         UpdateRotation();
         UpdateZoom();
     }
 
-    protected abstract void _Awake();
-    protected abstract void _Update();
 
-    protected abstract void UpdateRotation();
+    public abstract void UpdateRotation();
     public abstract void SetRotation(float rot);
 
-    protected abstract void UpdateZoom();
+    public abstract void UpdateZoom();
     public abstract void SetZoom(float newZoom);
 
     protected float Map(float s, float a1, float a2, float b1, float b2)

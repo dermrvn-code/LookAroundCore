@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public abstract class InteractionHandlerBase : MonoBehaviour
+public class InteractionHandler : MonoBehaviour
 {
 
     Hoverable target;
@@ -21,7 +21,7 @@ public abstract class InteractionHandlerBase : MonoBehaviour
         viewHandler = GetComponent<ViewHandler>();
     }
 
-    void UpdateElements()
+    public void UpdateElements()
     {
         updateElementsNextFrame = false;
         elements = new Dictionary<DomePosition, Hoverable>();

@@ -4,7 +4,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using Siccity.GLTFUtility;
 using UnityEngine.Events;
+using System.Linq;
 
+public struct Model
+{
+    public string name;
+    public string path;
+    public GameObject gameobject;
+    public Texture2D preview;
+
+    public bool used;
+
+    public Model(string name, string path, GameObject gameobject)
+    {
+        this.name = name;
+        this.path = path;
+        this.gameobject = gameobject;
+        preview = null;
+        used = false;
+    }
+}
 
 public abstract class ModelManagerBase : MonoBehaviour
 {
@@ -12,7 +31,7 @@ public abstract class ModelManagerBase : MonoBehaviour
     protected int maxModels = 8;
 
     [SerializeField]
-    protected Dictionary<string, GameObject> loadedModels = new Dictionary<string, GameObject>();
+    protected Dictionary<string, Model> loadedModels = new Dictionary<string, Model>();
 
     [SerializeField]
     protected GameObject sceneElementsContainer;
@@ -24,7 +43,7 @@ public abstract class ModelManagerBase : MonoBehaviour
     protected Renderer domeRenderer;
 
 
-    void Start()
+    public virtual void Start()
     {
         if (domeRenderer == null)
         {
@@ -37,46 +56,58 @@ public abstract class ModelManagerBase : MonoBehaviour
         }
     }
 
+    public string GetFirstModel()
+    {
+        foreach (var model in loadedModels.Values)
+        {
+            if (model.name != null && !model.used)
+            {
+                return model.name;
+            }
+        }
+        return null;
+    }
+
 
     [SerializeField]
     protected InteractableModel containerPrefab;
-    public DomePosition DisplayModel(string modelName)
+    public GameObject DisplayModel(string modelName)
     {
-        if (loadedModels.TryGetValue(modelName, out GameObject model))
+        if (loadedModels.TryGetValue(modelName, out Model model))
         {
             var container = Instantiate(containerPrefab, sceneElementsContainer.transform);
 
             var animContainer = container.GetComponent<InteractableModel>().elementContainer;
-            model.SetActive(true);
-            model.transform.SetParent(animContainer.transform, false);
+            model.gameobject.SetActive(true);
+            model.gameobject.transform.SetParent(animContainer.transform, false);
 
-            return container.GetComponent<DomePosition>();
+            return container.gameObject;
         }
 
         Debug.LogWarning("Model not found in loaded models: " + modelName);
         return null;
     }
 
-    public void HideModel(string modelName)
+    public virtual void HideModel(string modelName)
     {
-        if (loadedModels.TryGetValue(modelName, out GameObject model))
+        if (!loadedModels.TryGetValue(modelName, out Model model))
         {
-            model.transform.SetParent(siding.transform, false);
-            model.SetActive(false);
+            Debug.LogWarning("Model not found in loaded models: " + modelName);
             return;
         }
+        model.gameobject.transform.SetParent(siding.transform, false);
+        model.gameobject.SetActive(false);
 
-        Debug.LogWarning("Model not found in loaded models: " + modelName);
     }
 
     public void HideAllModels(string exceptModelName = null)
     {
         foreach (var model in loadedModels)
         {
-            if (model.Key != exceptModelName && model.Value != null)
+            if (model.Key != exceptModelName && model.Value.gameobject != null)
             {
-                model.Value.transform.SetParent(siding.transform, false);
-                model.Value.SetActive(false);
+                model.Value.gameobject.transform.SetParent(siding.transform, false);
+                model.Value.gameobject.SetActive(false);
             }
         }
     }
@@ -85,42 +116,65 @@ public abstract class ModelManagerBase : MonoBehaviour
     {
         foreach (var model in loadedModels.Values)
         {
-            if (model != null)
+            if (model.gameobject != null)
             {
-                model.transform.SetParent(siding.transform, false);
-                model.SetActive(false);
+                model.gameobject.transform.SetParent(siding.transform, false);
+                model.gameobject.SetActive(false);
             }
         }
     }
 
-    public void LoadModel(string filepath, string modelName, UnityAction onLoaded = null)
+    public string[] GetModelNames(int? maxModels = null)
+    {
+        return loadedModels.Keys.Take(maxModels.GetValueOrDefault(this.maxModels)).ToArray();
+    }
+
+    public void LoadModel(string filepath, string modelName, UnityAction<GameObject, Texture2D> onLoaded = null)
     {
         Importer.ImportGLTFAsync(filepath, new ImportSettings(), (GameObject result, AnimationClip[] clips) =>
         {
-            IntegrateModel(modelName, result);
-            onLoaded?.Invoke();
-            Debug.Log($"Model {modelName} loaded from {filepath}");
+            foreach (var meshFilter in result.GetComponentsInChildren<MeshFilter>())
+            {
+                var collider = meshFilter.gameObject.AddComponent<MeshCollider>();
+                collider.sharedMesh = meshFilter.sharedMesh;
+            }
+
+            result.name = modelName;
+            NormalizeModel(result);
+
+            OnModelLoaded(modelName, result, filepath, onLoaded);
         });
     }
 
-    public void UnloadModel(string modelName)
+    public virtual void OnModelLoaded(string modelName, GameObject result, string filePath, UnityAction<GameObject, Texture2D> onLoaded = null)
+    {
+        IntegrateModel(modelName, result, filePath);
+        onLoaded?.Invoke(result, null);
+        Debug.Log($"Model {modelName} loaded from {filePath}");
+    }
+
+
+    public void UnloadModel(string modelName, Action<Model> onUnloaded = null)
     {
         if (loadedModels.ContainsKey(modelName))
         {
-            loadedModels.TryGetValue(modelName, out GameObject model);
+            loadedModels.TryGetValue(modelName, out Model model);
             loadedModels.Remove(modelName);
-            if (model != null)
+            if (model.gameobject != null)
             {
-                Destroy(model);
+                Destroy(model.gameobject);
             }
             Debug.Log($"Model {modelName} unloaded.");
+            onUnloaded?.Invoke(model);
             return;
         }
         Debug.LogWarning("Model not found in loaded models: " + modelName);
     }
 
+
+
     float realismFactor = 0.2f;
-    void NormalizeModel(GameObject model)
+    protected void NormalizeModel(GameObject model)
     {
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
@@ -185,7 +239,7 @@ public abstract class ModelManagerBase : MonoBehaviour
         model.transform.localScale = Vector3.one * scaleFactor;
     }
 
-    void IntegrateModel(string modelName, GameObject result)
+    protected void IntegrateModel(string modelName, GameObject result, string filepath)
     {
         if (loadedModels.Count >= maxModels)
         {
@@ -199,20 +253,21 @@ public abstract class ModelManagerBase : MonoBehaviour
             return;
         }
 
-        NormalizeModel(result);
         result.transform.SetParent(siding.transform, false);
         result.gameObject.SetActive(false);
 
-        loadedModels.Add(modelName, result);
+        Model model = new Model(modelName, filepath, result);
+
+        loadedModels.Add(modelName, new Model(modelName, "", result));
     }
 
-    public void UnloadAllModels()
+    public virtual void UnloadAllModels()
     {
         foreach (var model in loadedModels.Values)
         {
-            if (model != null)
+            if (model.gameobject != null)
             {
-                Destroy(model);
+                Destroy(model.gameobject);
             }
         }
         loadedModels.Clear();

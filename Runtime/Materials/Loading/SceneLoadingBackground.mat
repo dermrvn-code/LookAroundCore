@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SceneLoadingBackground
-  m_Shader: {fileID: 4800000, guid: 08c11eb8202ba2944ac6b2033a473bef, type: 3}
+  m_Shader: {fileID: 4800000, guid: daee953a7e53b644096c7d0122ccf03a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []

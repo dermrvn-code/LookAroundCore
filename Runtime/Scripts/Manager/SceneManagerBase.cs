@@ -14,25 +14,21 @@ public abstract class SceneManagerBase : MonoBehaviour
 
     protected XDocument worldOverview;
     protected XDocument scenesOverview;
-    protected ProgressBar progressBar;
+    protected ProgressBarBase progressBar;
     protected SpriteManager spriteManager;
     protected LogoLoadingOverlay logoLoadingOverlay;
     public Dictionary<string, Scene> sceneList = new Dictionary<string, Scene>();
 
-    void Start()
+    public virtual void Start()
     {
         sceneChanger = FindFirstObjectByType<SceneChangerBase>();
         textureManager = FindFirstObjectByType<TextureManager>();
         modelManager = FindFirstObjectByType<ModelManagerBase>();
-        progressBar = FindFirstObjectByType<ProgressBar>();
+        progressBar = FindFirstObjectByType<ProgressBarBase>();
         spriteManager = FindFirstObjectByType<SpriteManager>();
 
         logoLoadingOverlay = FindFirstObjectByType<LogoLoadingOverlay>();
-
-        _Start();
     }
-
-    public abstract void _Start();
 
     List<string> texturePaths;
     Dictionary<string, string> modelPaths = new Dictionary<string, string>();
@@ -73,7 +69,7 @@ public abstract class SceneManagerBase : MonoBehaviour
         StartCoroutine(textureManager.LoadAllTextures(texturePaths,
         (float progress, string path) => // onProgress
         {
-            progressBar.UpdateBarIncreaseSteps(1, maxLoadingSteps, Path.GetFileName(path));
+            progressBar.UpdateBarIncreaseSteps(maxLoadingSteps, Path.GetFileName(path));
         },
         () => // onComplete
         {
@@ -83,7 +79,7 @@ public abstract class SceneManagerBase : MonoBehaviour
         foreach (var spritePath in spritePaths)
         {
             spriteManager.LoadSprite(spritePath.Key, spritePath.Value);
-            progressBar.UpdateBarIncreaseSteps(1, maxLoadingSteps, Path.GetFileName(spritePath.Value));
+            progressBar.UpdateBarIncreaseSteps(maxLoadingSteps, Path.GetFileName(spritePath.Value));
         }
 
         foreach (var model in modelPaths)
@@ -91,9 +87,9 @@ public abstract class SceneManagerBase : MonoBehaviour
             string modelName = model.Key;
             string modelPath = model.Value;
 
-            modelManager.LoadModel(modelPath, modelName, () =>
+            modelManager.LoadModel(modelPath, modelName, (GameObject result, Texture2D texture) =>
             {
-                progressBar.UpdateBarIncreaseSteps(1, maxLoadingSteps, Path.GetFileName(modelPath));
+                progressBar.UpdateBarIncreaseSteps(maxLoadingSteps, Path.GetFileName(modelPath));
             });
         }
 

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 360MaterialVideo
-  m_Shader: {fileID: 4800000, guid: 55dbf92a166b39b4398b4f5f2cf31edb, type: 3}
+  m_Shader: {fileID: 4800000, guid: 844137b063c202041b4d72e67dbcfc0b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -81,3 +81,4 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

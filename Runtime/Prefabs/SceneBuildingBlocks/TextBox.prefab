@@ -49,6 +49,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,7 +84,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7724541756597076768
@@ -93,7 +96,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7610261080983705899}
-  - component: {fileID: 3453524359806634437}
+  - component: {fileID: 976942853589606756}
   - component: {fileID: 1212589620443345445}
   m_Layer: 0
   m_Name: TextBox
@@ -120,7 +123,7 @@ Transform:
   - {fileID: 1134340416443874462}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3453524359806634437
+--- !u!114 &976942853589606756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,11 +132,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 7724541756597076768}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d45b7aa7ca3ca98419457598cc73e0dc, type: 3}
+  m_Script: {fileID: 11500000, guid: e28e8a9633d801a448e6ffdd098fdc4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: 0, y: 0}
-  distance: 10
+  text: {fileID: 1134340416443874462}
+  background: {fileID: 8027590173567883576}
+  icon: {fileID: 8250442890953714212}
+  iconName: 
+  textContent: 
+  closedScale: {x: 1, y: 1, z: 1}
+  scale: {x: 0, y: 0}
+  isOpen: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  tmptext: {fileID: 0}
 --- !u!114 &1212589620443345445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,15 +154,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7724541756597076768}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da5b1565444cd1547a252bd201477d3b, type: 3}
+  m_Script: {fileID: 11500000, guid: f22bbfd05ec124c49b348cf5bdad57f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 1134340416443874462}
-  background: {fileID: 8027590173567883576}
-  icon: {fileID: 8250442890953714212}
-  closedScale: {x: 1, y: 1, z: 0.99}
-  scale: {x: 6, y: 5}
-  isOpen: 0
+  position: {x: 0, y: 0}
+  distance: 10
+  xRotOffset: 0
 --- !u!1 &8027590173567883576
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,10 +219,13 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4eb11c0efd8d3fa44a35889a7c98d3c7, type: 2}
+  - {fileID: 2100000, guid: 29e4d4974550433448f486227b2ba6d8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -311,6 +322,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -403,15 +417,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 0
   m_isCullingEnabled: 0

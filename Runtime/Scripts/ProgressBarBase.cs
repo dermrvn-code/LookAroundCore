@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using TMPro;
 
-public abstract class ProgressBar : MonoBehaviour
+public abstract class ProgressBarBase : MonoBehaviour
 {
     [SerializeField]
     protected TMP_Text progressText;
@@ -17,26 +17,27 @@ public abstract class ProgressBar : MonoBehaviour
 
     protected Action onFull;
 
-    void Update()
+    public virtual void Update()
     {
-        _Update();
     }
 
-    public abstract void _Update();
 
     public void OnFull(Action action)
     {
         onFull = () =>
         {
             action?.Invoke();
-            onFull = null;
+            this.onFull = null;
+            currentStep = 0;
         };
     }
 
-    public void UpdateBarIncreaseSteps(int step, int totalSteps, string message)
+    public void UpdateBarIncreaseSteps(int totalSteps, string message, int step = 1)
     {
         currentStep += step;
         this.totalSteps = totalSteps;
+        if (currentStep > totalSteps) currentStep = totalSteps;
+
         UpdateBar(message);
     }
 
@@ -59,7 +60,7 @@ public abstract class ProgressBar : MonoBehaviour
         UpdateProgressText(message);
     }
 
-    void UpdateProgressText(string message)
+    public void UpdateProgressText(string message)
     {
         if (progressText != null)
         {

@@ -9,53 +9,62 @@ using UnityEngine.Video;
 
 public abstract class SceneChangerBase : MonoBehaviour
 {
-    public GameObject particlesGameobject;
-    ParticleSystem particles;
+    [SerializeField] protected GameObject particlesGameobject;
+    protected ParticleSystem particles;
 
-    [SerializeField] MeshRenderer domeRenderer;
-    [SerializeField] Material videoMaterial;
-    [SerializeField] Material photoMaterial;
-    [SerializeField] Texture mainScreenImage;
-    [SerializeField] GameObject sceneElementsContainer;
-    [SerializeField] VideoPlayer videoPlayer;
+    [SerializeField] protected MeshRenderer domeRenderer;
+    [SerializeField] protected Material videoMaterial;
+    [SerializeField] protected Material photoMaterial;
+    [SerializeField] protected Texture mainScreenImage;
+    [SerializeField] protected GameObject sceneElementsContainer;
+    [SerializeField] protected VideoPlayer videoPlayer;
 
     protected SceneManagerBase sceneManager;
-    protected InteractionHandlerBase interactionHandler;
+    protected InteractionHandler interactionHandler;
     protected TextureManager textureManager;
     protected LogoLoadingOverlay loadingOverlay;
     protected SpriteManager spriteManager;
     protected ModelManagerBase modelManager;
 
-    Scene currentScene;
+    public Scene currentScene;
 
-    [SerializeField] TMP_Text textPrefab;
-    [SerializeField] GameObject textboxPrefab;
-    [SerializeField] GameObject arrowPrefab;
-    [SerializeField] GameObject spritePrefab;
+    [SerializeField] protected TMP_Text textPrefab;
+    [SerializeField] protected GameObject textboxPrefab;
+    [SerializeField] protected GameObject arrowPrefab;
+    [SerializeField] protected GameObject spritePrefab;
 
-    public Sprite info, warning, question, play;
+    protected Sprite info, warning, question, play;
 
-    public static string[] actionTypes = { "toScene" };
 
-    void Start()
+    public virtual void Start()
     {
         sceneManager = FindFirstObjectByType<SceneManagerBase>();
-        interactionHandler = FindFirstObjectByType<InteractionHandlerBase>();
+        interactionHandler = FindFirstObjectByType<InteractionHandler>();
         textureManager = FindFirstObjectByType<TextureManager>();
         modelManager = FindFirstObjectByType<ModelManagerBase>();
         loadingOverlay = FindFirstObjectByType<LogoLoadingOverlay>();
         spriteManager = FindFirstObjectByType<SpriteManager>();
-
         particlesGameobject.SetActive(true);
         particles = particlesGameobject.GetComponent<ParticleSystem>();
     }
 
-    public void Quit()
+    protected void Quit()
     {
         Application.Quit();
     }
 
-    public void ToMainScene()
+    public void ToMainSceneAnimation()
+    {
+        TransitionParticles((sceneLoaded) =>
+            {
+                ToMainScene();
+                sceneLoaded?.Invoke();
+            }
+        );
+    }
+
+
+    public virtual void ToMainScene()
     {
         photoMaterial.mainTexture = mainScreenImage;
         photoMaterial.mainTextureOffset = Vector2.zero;
@@ -80,17 +89,17 @@ public abstract class SceneChangerBase : MonoBehaviour
             Debug.LogWarning("There is no start scene specified");
     }
 
-    void SwitchToVideo()
+    protected void SwitchToVideo()
     {
         domeRenderer.material = videoMaterial;
     }
 
-    void SwitchToFoto()
+    protected void SwitchToFoto()
     {
         domeRenderer.material = photoMaterial;
     }
 
-    public void SwitchSceneAnimation(Scene scene, int index = -1)
+    public virtual void SwitchSceneAnimation(Scene scene, int index = -1)
     {
         if (scene == null || scene == currentScene) return;
 
@@ -106,7 +115,7 @@ public abstract class SceneChangerBase : MonoBehaviour
         }
     }
 
-    public void SwitchScene(Scene scene, Action onLoaded = null)
+    public virtual void SwitchScene(Scene scene, Action onLoaded = null)
     {
         if (scene == null || scene == currentScene) return;
 
@@ -152,18 +161,26 @@ public abstract class SceneChangerBase : MonoBehaviour
         }
     }
 
+    public void ClearSceneElements()
+    {
+        var children = new List<GameObject>();
+        foreach (Transform child in sceneElementsContainer.transform) children.Add(child.gameObject);
+        if (Application.isPlaying)
+        {
+            children.ForEach(child => Destroy(child));
+        }
+        else
+        {
+            children.ForEach(child => DestroyImmediate(child));
+        }
+
+    }
+
     public void LoadSceneElements(List<SceneElement> sceneElements)
     {
         modelManager.HideAllModels();
+        ClearSceneElements();
 
-        var children = new List<GameObject>();
-        foreach (Transform child in sceneElementsContainer.transform)
-            children.Add(child.gameObject);
-
-        if (Application.isPlaying)
-            children.ForEach(Destroy);
-        else
-            children.ForEach(DestroyImmediate);
 
         foreach (var sceneElement in sceneElements)
         {
@@ -178,7 +195,7 @@ public abstract class SceneChangerBase : MonoBehaviour
         }
     }
 
-    public void LoadTextElement(SceneElementText sceneElement)
+    public virtual GameObject LoadTextElement(SceneElementText sceneElement)
     {
         var text = Instantiate(textPrefab, sceneElementsContainer.transform);
 
@@ -196,9 +213,11 @@ public abstract class SceneChangerBase : MonoBehaviour
 
         var interactable = text.GetComponent<Interactable>();
         interactable.OnInteract.AddListener(() => ActionParser(sceneElement.action));
+
+        return text.gameObject;
     }
 
-    public void LoadTextboxElement(SceneElementTextbox sceneElement)
+    public virtual GameObject LoadTextboxElement(SceneElementTextbox sceneElement)
     {
         var text = Instantiate(textboxPrefab, sceneElementsContainer.transform);
         var tmptext = text.GetComponentInChildren<TMP_Text>();
@@ -231,9 +250,11 @@ public abstract class SceneChangerBase : MonoBehaviour
         };
         if (sprite != null)
             spriteRenderer.sprite = sprite;
+
+        return text.gameObject;
     }
 
-    public void LoadArrow(SceneElementArrow sceneElement)
+    public virtual GameObject LoadArrow(SceneElementArrow sceneElement)
     {
         var arrow = Instantiate(arrowPrefab, sceneElementsContainer.transform);
 
@@ -249,32 +270,42 @@ public abstract class SceneChangerBase : MonoBehaviour
         interactableArrow.OnInteract.AddListener(() => ActionParser(sceneElement.action));
 
         interactableArrow.color = ColorUtility.TryParseHtmlString(sceneElement.color, out Color unityColor) ? unityColor : Color.white;
+
+        return arrow.gameObject;
     }
 
-    public void LoadModel(SceneElementModel sceneElement)
+    public virtual GameObject LoadModel(SceneElementModel sceneElement)
     {
-        var dp = modelManager.DisplayModel(sceneElement.modelName);
-        if (dp == null) return;
+        GameObject model = modelManager.DisplayModel(sceneElement.modelName);
+        if (model == null) return null;
+
+        DomePosition dp = model.GetComponent<DomePosition>();
 
         dp.position.x = sceneElement.x;
         dp.position.y = sceneElement.y;
         dp.distance = sceneElement.distance;
         dp.xRotOffset = sceneElement.xRotationOffset;
 
-        var modelTransform = dp.GetComponent<ModelTransform>();
+        ModelTransform modelTransform = model.GetComponent<ModelTransform>();
+
         modelTransform.rotation.x = sceneElement.xRotation;
         modelTransform.rotation.y = sceneElement.yRotation;
         modelTransform.rotation.z = sceneElement.zRotation;
         modelTransform.scale = sceneElement.scale;
 
-        var interactableModel = dp.GetComponent<InteractableModel>();
-        interactableModel.OnInteract.AddListener(() => ActionParser(sceneElement.action));
+        InteractableModel interactableModel = dp.GetComponent<InteractableModel>();
+        interactableModel.OnInteract.AddListener(() =>
+        {
+            ActionParser(sceneElement.action);
+        });
+
+        return dp.gameObject;
     }
 
-    public void LoadSprite(SceneElementSprite sceneElement)
+    public virtual GameObject LoadSprite(SceneElementSprite sceneElement)
     {
         var texture = spriteManager.GetSprite(sceneElement.index);
-        if (texture == null) return;
+        if (texture == null) return null;
 
         var sprite = Instantiate(spritePrefab, sceneElementsContainer.transform).GetComponent<InteractableSprite>();
         sprite.texture = texture;
@@ -286,6 +317,8 @@ public abstract class SceneChangerBase : MonoBehaviour
         dp.xRotOffset = sceneElement.xRotationOffset;
 
         sprite.OnInteract.AddListener(() => ActionParser(sceneElement.action));
+
+        return sprite.gameObject;
     }
 
     public void ActionParser(string action)
