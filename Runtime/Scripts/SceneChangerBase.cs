@@ -126,7 +126,7 @@ public abstract class SceneChangerBase : MonoBehaviour
         if (scene == null || scene == currentScene) return;
 
         // CALL EXIT ACTION
-        actionManager.ActionParser(currentScene.ExitAction);
+        if (currentScene != null) actionManager.ActionParser(currentScene.ExitAction);
 
         currentScene = scene;
         LoadSceneElements(new List<SceneElement>(scene.SceneElements.Values));

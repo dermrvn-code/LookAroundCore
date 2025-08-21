@@ -254,12 +254,32 @@ public abstract class SceneManagerBase : MonoBehaviour
             return false;
         }
 
+        ShufflePieces(pieces);
+
         // Load the minigame assets
         Texture2D puzzleTexture = spriteManager.GetSprite(sprite);
         if (puzzleTexture == null) return false;
 
         puzzleManager.SetupPuzzle(puzzleTexture, pieces, () => actionManager.ActionParser(finished));
         return true;
+    }
+
+    void ShufflePieces(int pieces)
+    {
+        var pieceOrder = Enumerable.Range(0, pieces).OrderBy(_ => Guid.NewGuid()).ToArray();
+
+        int index = 0;
+        foreach (var scene in sceneList.Values)
+        {
+            for (int j = 0; j < scene.SceneElements.Count; j++)
+            {
+                if (scene.SceneElements[j] is SceneElementPuzzle puzzlePiece)
+                {
+                    puzzlePiece.index = pieceOrder[index++];
+                    scene.SceneElements[j] = puzzlePiece;
+                }
+            }
+        }
     }
 
     Scene LoadScene(string sceneName, string mainFolder, string scenePath, bool isStartScene)

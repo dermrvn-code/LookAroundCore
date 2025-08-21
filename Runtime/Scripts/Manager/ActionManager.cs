@@ -18,7 +18,6 @@ public class ActionManager : MonoBehaviour
 
     public void ActionParser(string action)
     {
-        Debug.Log(action);
         string pattern;
         Match match;
 
