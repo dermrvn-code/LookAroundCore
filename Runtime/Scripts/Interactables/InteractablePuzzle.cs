@@ -10,6 +10,8 @@ public class InteractablePuzzle : Interactable
     ParticleSystem particles;
     PuzzleManager puzzleManager;
 
+    public bool active = true;
+
     MeshRenderer meshRenderer;
     public int id;
 
@@ -62,6 +64,7 @@ public class InteractablePuzzle : Interactable
 
     void CollectPiece()
     {
+        if (!active) return;
         if (puzzleManager.CanCollect(id))
         {
             puzzleManager.CollectPiece(id);

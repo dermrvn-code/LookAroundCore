@@ -9,11 +9,13 @@ public struct SpriteData
 {
     public string path;
     public Texture2D texture;
+    public int index;
 
-    public SpriteData(string path, Texture2D texture)
+    public SpriteData(string path, Texture2D texture, int index)
     {
         this.path = path;
         this.texture = texture;
+        this.index = index;
     }
 }
 
@@ -56,7 +58,7 @@ public class SpriteManager : MonoBehaviour
 
         StartCoroutine(LoadTextureFromPath(path, texture =>
         {
-            sceneSprites[index] = new SpriteData(path, texture);
+            sceneSprites[index] = new SpriteData(path, texture, index);
         }));
     }
 
@@ -89,7 +91,7 @@ public class SpriteManager : MonoBehaviour
             Debug.LogError("Index out of bounds for sceneSprites array.");
             return;
         }
-        sceneSprites[index] = new SpriteData(string.Empty, null);
+        sceneSprites[index] = new SpriteData(string.Empty, null, index);
     }
 
     public SpriteData[] GetAllSprites()
@@ -135,7 +137,7 @@ public class SpriteManager : MonoBehaviour
     {
         if (id >= 0 && id < logos.Length)
         {
-            logos[id] = new LogoData(new SpriteData(string.Empty, null), colorDefault);
+            logos[id] = new LogoData(new SpriteData(string.Empty, null, id), colorDefault);
         }
     }
 

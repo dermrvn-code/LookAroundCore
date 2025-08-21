@@ -333,16 +333,21 @@ public abstract class SceneChangerBase : MonoBehaviour
         return sprite.gameObject;
     }
 
-    public virtual GameObject LoadPuzzlePiece(SceneElementPuzzle sceneElement)
+    public virtual GameObject LoadPuzzlePiece(SceneElementPuzzle sceneElement, bool placeholder = false)
     {
-        var piece = puzzleManager.GetPiece(sceneElement.index);
-        if (piece.texture == null) return null;
-
-        var texture = piece.texture;
+        if (!puzzleManager.isEnabled) return null;
 
         var pieceElement = Instantiate(puzzlePiecePrefab, sceneElementsContainer.transform).GetComponent<InteractablePuzzle>();
-        pieceElement.texture = texture;
-        pieceElement.id = sceneElement.index;
+
+        if (!placeholder)
+        {
+            var piece = puzzleManager.GetPiece(sceneElement.index);
+            if (piece.texture == null) return null;
+            var texture = piece.texture;
+
+            pieceElement.texture = texture;
+            pieceElement.id = sceneElement.index;
+        }
 
         var dp = pieceElement.GetComponent<DomePosition>();
         dp.position.x = sceneElement.x;
@@ -367,14 +372,9 @@ public abstract class SceneChangerBase : MonoBehaviour
     {
         particles.Play();
         yield return new WaitForSeconds(2f);
-        sceneLoaded.Invoke(() => StartCoroutine(_StopParticles()));
+        sceneLoaded.Invoke(() => particles.Stop());
     }
 
-    private IEnumerator _StopParticles()
-    {
-        yield return new WaitForSeconds(0.5f);
-        particles.Stop();
-    }
 
     public IEnumerator _FadeIn(Action<Action> sceneLoaded, int logoIndex)
     {

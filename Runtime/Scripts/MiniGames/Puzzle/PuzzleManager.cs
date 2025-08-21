@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public struct Piece
 {
     public int id;
@@ -19,7 +20,8 @@ public struct Piece
 public class PuzzleManager : MonoBehaviour
 {
     public Texture2D mainTex;
-    public int totalPieces = 4;
+    public int mainTexId = -1;
+    public int totalPieces = 0;
 
     PuzzleDisplay puzzleDisplay;
     private Texture2D maskTex;
@@ -28,37 +30,57 @@ public class PuzzleManager : MonoBehaviour
     private int pieceWidth;
     private int pieceHeight;
 
+    [SerializeField]
     List<Piece> pieces = new List<Piece>();
 
     public bool isActive = false;
     public bool isCompleted = false;
+    public bool isEnabled = false;
 
-    public Action onCompleted;
+    Action onCompleted;
+    public string finishedAction;
 
 
+    SpriteManager spriteManager;
+    ActionManager actionManager;
 
     void Awake()
     {
         if (!puzzleDisplay) puzzleDisplay = FindFirstObjectByType<PuzzleDisplay>();
         puzzleDisplay.SetActive(false);
+
+        spriteManager = FindFirstObjectByType<SpriteManager>();
+        actionManager = FindFirstObjectByType<ActionManager>();
     }
 
-    public void SetupPuzzle(Texture2D newMainTex, int pieceAmount, Action finished = null)
+    public void SetupPuzzle(int textureId, int pieceAmount, string finishedAction = null)
     {
         if (pieceAmount % 2 != 0)
         {
             Debug.Log("Pieces were odd, incrementing to " + (pieceAmount + 1));
             pieceAmount++;
         }
+        totalPieces = pieceAmount;
 
-        if (finished != null)
+        if (finishedAction != null)
         {
-            onCompleted = finished;
+            this.finishedAction = finishedAction;
+            onCompleted = () => actionManager.ActionParser(finishedAction);
         }
 
-        mainTex = newMainTex;
+        // Load the minigame assets
+        Texture2D puzzleTexture = spriteManager.GetSprite(textureId);
+        if (puzzleTexture == null)
+        {
+            isEnabled = false;
+            return;
+        }
+
+        mainTex = puzzleTexture;
+        mainTexId = textureId;
         puzzleDisplay.image = mainTex;
         puzzleDisplay.LoadImage();
+        isEnabled = true;
 
         GetBestGrid(mainTex.width, mainTex.height, pieceAmount);
         CreateMask();
@@ -67,6 +89,7 @@ public class PuzzleManager : MonoBehaviour
 
     public void StartPuzzle()
     {
+        if (!isEnabled) return;
         puzzleDisplay.SetActive(true);
         isActive = true;
         isCompleted = false;
@@ -90,6 +113,7 @@ public class PuzzleManager : MonoBehaviour
 
     public void RestartPuzzle()
     {
+        if (!isEnabled) return;
         ResetPuzzle();
         StartPuzzle();
     }
@@ -199,7 +223,7 @@ public class PuzzleManager : MonoBehaviour
 
     public bool CanCollect(int index)
     {
-        if (!isActive || isCompleted) return false;
+        if (!isActive || isCompleted || !isEnabled) return false;
 
         if (index < 0 || index >= pieces.Count) return false;
 

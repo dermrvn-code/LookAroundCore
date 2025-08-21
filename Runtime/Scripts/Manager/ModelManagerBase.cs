@@ -258,7 +258,7 @@ public abstract class ModelManagerBase : MonoBehaviour
 
         Model model = new Model(modelName, filepath, result);
 
-        loadedModels.Add(modelName, new Model(modelName, "", result));
+        loadedModels.Add(modelName, model);
     }
 
     public virtual void UnloadAllModels()

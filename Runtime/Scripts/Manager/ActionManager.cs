@@ -1,6 +1,14 @@
 using System.Text.RegularExpressions;
 using UnityEngine;
 
+public enum ActionType
+{
+    None,
+    ToScene,
+    StartMiniGame,
+    RestartMiniGame
+}
+
 public class ActionManager : MonoBehaviour
 {
     SceneManagerBase sceneManager;
@@ -15,44 +23,57 @@ public class ActionManager : MonoBehaviour
     }
 
 
+    string toScenePattern = @"\btoScene\(([^,)]+?)(?:,(-?\d))*\)";
+    string startMiniGamePattern = @"\bstartMiniGame\(([^,)]+?)(?:,([^,)]+?))?(?:,(-?\d))?\)";
+    string restartMiniGamePattern = @"\brestartMiniGame\(([^,)]+?)(?:,([^,)]+?))?(?:,(-?\d))?\)";
 
     public void ActionParser(string action)
     {
-        string pattern;
-        Match match;
+        switch (GetFunction(action, out Match match))
+        {
+            case ActionType.ToScene:
+                ParseToScene(match);
+                break;
+            case ActionType.StartMiniGame:
+                ParseStartMiniGame(match);
+                break;
+            case ActionType.RestartMiniGame:
+                ParseRestartMiniGame(match);
+                break;
+            default:
+                break;
+        }
+    }
 
-        if (string.IsNullOrEmpty(action)) return;
+    public ActionType GetFunction(string action, out Match match)
+    {
+        match = null;
+
+        if (string.IsNullOrEmpty(action)) return ActionType.None;
 
         // TO SCENE
-        pattern = @"\btoScene\(([^,)]+?)(?:,(-?\d))*\)";
-        match = Regex.Match(action, pattern);
+        match = Regex.Match(action, toScenePattern);
         if (match.Success)
         {
-            ParseToScene(match);
-            return;
+            return ActionType.ToScene;
         }
 
         // START MINIGAME
-        pattern = @"\bstartMiniGame\(([^,)]+?)(?:,([^,)]+?))?(?:,(-?\d))?\)";
-        match = Regex.Match(action, pattern);
+        match = Regex.Match(action, startMiniGamePattern);
         if (match.Success)
         {
-            ParseStartMiniGame(match);
-            return;
+            return ActionType.StartMiniGame;
         }
 
         // RESTART MINIGAME
-        pattern = @"\brestartMiniGame\(([^,)]+?)(?:,([^,)]+?))?(?:,(-?\d))?\)";
-        match = Regex.Match(action, pattern);
+        match = Regex.Match(action, restartMiniGamePattern);
         if (match.Success)
         {
-            ParseRestartMiniGame(match);
-            return;
+            return ActionType.RestartMiniGame;
         }
 
         Debug.Log($"Could not parse '{action}'");
-
-
+        return ActionType.None;
     }
 
     void GoToScene(string sceneName, int animationIndex)

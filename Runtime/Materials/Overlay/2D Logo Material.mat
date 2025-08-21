@@ -91,7 +91,7 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _TexAspect: 1
-    - _TexHeight: 1
+    - _TexHeight: 0.24955909
     - _TexWidth: 1
     - _UVSec: 0
     - _UseUIAlphaClip: 0

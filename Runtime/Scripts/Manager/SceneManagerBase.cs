@@ -256,11 +256,7 @@ public abstract class SceneManagerBase : MonoBehaviour
 
         ShufflePieces(pieces);
 
-        // Load the minigame assets
-        Texture2D puzzleTexture = spriteManager.GetSprite(sprite);
-        if (puzzleTexture == null) return false;
-
-        puzzleManager.SetupPuzzle(puzzleTexture, pieces, () => actionManager.ActionParser(finished));
+        puzzleManager.SetupPuzzle(sprite, pieces, finished);
         return true;
     }
 
