@@ -16,6 +16,8 @@ public abstract class SceneManagerBase : MonoBehaviour
     protected XDocument scenesOverview;
     protected ProgressBarBase progressBar;
     protected SpriteManager spriteManager;
+    protected PuzzleManager puzzleManager;
+    protected ActionManager actionManager;
     protected LogoLoadingOverlay logoLoadingOverlay;
     public Dictionary<string, Scene> sceneList = new Dictionary<string, Scene>();
 
@@ -26,6 +28,8 @@ public abstract class SceneManagerBase : MonoBehaviour
         modelManager = FindFirstObjectByType<ModelManagerBase>();
         progressBar = FindFirstObjectByType<ProgressBarBase>();
         spriteManager = FindFirstObjectByType<SpriteManager>();
+        puzzleManager = FindFirstObjectByType<PuzzleManager>();
+        actionManager = FindFirstObjectByType<ActionManager>();
 
         logoLoadingOverlay = FindFirstObjectByType<LogoLoadingOverlay>();
     }
@@ -46,6 +50,9 @@ public abstract class SceneManagerBase : MonoBehaviour
         texturePaths = new List<string>();
         textureManager.ReleaseAllTextures();
 
+        // MINIGAMES
+        pieceAmountInScenes = 0;
+
         modelPaths = new Dictionary<string, string>();
         modelManager.UnloadAllModels();
 
@@ -63,6 +70,7 @@ public abstract class SceneManagerBase : MonoBehaviour
 
         progressBar.OnFull(() =>
         {
+            LoadMinigame();
             onComplete?.Invoke();
         });
 
@@ -210,6 +218,50 @@ public abstract class SceneManagerBase : MonoBehaviour
         }
     }
 
+
+    void LoadMinigame()
+    {
+        var minigameElement = scenesOverview.Root.Element("Minigame");
+        if (minigameElement != null)
+        {
+            string name = minigameElement.Attribute("name").Value;
+
+            switch (name)
+            {
+                case "puzzle":
+                    if (!LoadPuzzleGame(minigameElement)) Debug.LogWarning("Failed to load puzzle minigame.");
+                    break;
+
+                default:
+                    Debug.LogWarning($"Unknown minigame type: {name}");
+                    break;
+            }
+
+        }
+
+    }
+
+    int pieceAmountInScenes;
+    bool LoadPuzzleGame(XElement minigameElement)
+    {
+        int pieces = TryGetAttributeInt(minigameElement, "pieces", 4);
+        int sprite = TryGetAttributeInt(minigameElement, "sprite", 0);
+        string finished = TryGetAttributeString(minigameElement, "finished", "");
+
+        if (pieceAmountInScenes != pieces)
+        {
+            Debug.LogWarning($"Inconsistent piece count in scenes: {pieceAmountInScenes} vs {pieces}");
+            return false;
+        }
+
+        // Load the minigame assets
+        Texture2D puzzleTexture = spriteManager.GetSprite(sprite);
+        if (puzzleTexture == null) return false;
+
+        puzzleManager.SetupPuzzle(puzzleTexture, pieces, () => actionManager.ActionParser(finished));
+        return true;
+    }
+
     Scene LoadScene(string sceneName, string mainFolder, string scenePath, bool isStartScene)
     {
         var sceneXML = XDocument.Load(mainFolder + "/" + scenePath);
@@ -218,17 +270,11 @@ public abstract class SceneManagerBase : MonoBehaviour
         string type = sceneTag.Attribute("type").Value;
         string source = sceneTag.Attribute("source").Value;
 
+        float xOffset = TryGetAttributeFloat(sceneTag, "xOffset", 0);
+        float yOffset = TryGetAttributeFloat(sceneTag, "yOffset", 0);
 
-        float xOffset = 0;
-        float yOffset = 0;
-        if (sceneTag.Attribute("xOffset") != null)
-        {
-            xOffset = float.Parse(sceneTag.Attribute("xOffset").Value);
-        }
-        if (sceneTag.Attribute("yOffset") != null)
-        {
-            yOffset = float.Parse(sceneTag.Attribute("yOffset").Value);
-        }
+        string enterAction = TryGetAttributeString(sceneTag, "enterAction", "");
+        string exitAction = TryGetAttributeString(sceneTag, "exitAction", "");
 
         string sceneFolder = Path.GetDirectoryName(mainFolder + "/" + scenePath);
         source = Path.Combine(sceneFolder, source);
@@ -249,12 +295,9 @@ public abstract class SceneManagerBase : MonoBehaviour
                 text = "No Text given";
             }
 
-            int x = int.Parse(element.Attribute("x").Value);
-            int y = int.Parse(element.Attribute("y").Value);
-
+            int x = TryGetAttributeInt(element, "x", 0);
+            int y = TryGetAttributeInt(element, "y", 0);
             int distance = TryGetAttributeInt(element, "distance", 10);
-
-
             int xRotationOffset = TryGetAttributeInt(element, "xRotationOffset", 0);
 
 
@@ -339,6 +382,18 @@ public abstract class SceneManagerBase : MonoBehaviour
                     action: action
                 );
             }
+            else if (elementType == "puzzlepiece")
+            {
+                int index = pieceAmountInScenes;
+
+                se = new SceneElementPuzzle(
+                    index: index,
+                    x: x, y: y,
+                    distance: distance,
+                    xRotationOffset: xRotationOffset
+                );
+                pieceAmountInScenes++;
+            }
             else
             {
                 Debug.Log("Element doesnt match any type : " + elementType);
@@ -350,7 +405,12 @@ public abstract class SceneManagerBase : MonoBehaviour
                 elementId++;
             }
         }
-        Scene sceneObj = new Scene(type == "video" ? Scene.MediaType.Video : Scene.MediaType.Photo, sceneName, source, sceneElements, isStartScene, xOffset, yOffset);
+        Scene sceneObj = new Scene(
+            type == "video" ? Scene.MediaType.Video : Scene.MediaType.Photo,
+            sceneName, source,
+            sceneElements, isStartScene,
+            xOffset, yOffset,
+            enterAction, exitAction);
 
         sceneList.Add(sceneName, sceneObj);
         return sceneObj;
@@ -370,6 +430,15 @@ public abstract class SceneManagerBase : MonoBehaviour
         if (element.Attribute(attributeName) != null)
         {
             return element.Attribute(attributeName).Value;
+        }
+        return defaultValue;
+    }
+
+    float TryGetAttributeFloat(XElement element, string attributeName, float defaultValue)
+    {
+        if (element.Attribute(attributeName) != null)
+        {
+            return float.Parse(element.Attribute(attributeName).Value);
         }
         return defaultValue;
     }

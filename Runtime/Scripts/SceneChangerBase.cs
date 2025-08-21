@@ -25,6 +25,8 @@ public abstract class SceneChangerBase : MonoBehaviour
     protected LogoLoadingOverlay loadingOverlay;
     protected SpriteManager spriteManager;
     protected ModelManagerBase modelManager;
+    protected PuzzleManager puzzleManager;
+    protected ActionManager actionManager;
 
     public Scene currentScene;
 
@@ -32,6 +34,7 @@ public abstract class SceneChangerBase : MonoBehaviour
     [SerializeField] protected GameObject textboxPrefab;
     [SerializeField] protected GameObject arrowPrefab;
     [SerializeField] protected GameObject spritePrefab;
+    [SerializeField] protected GameObject puzzlePiecePrefab;
 
     protected Sprite info, warning, question, play;
 
@@ -44,6 +47,9 @@ public abstract class SceneChangerBase : MonoBehaviour
         modelManager = FindFirstObjectByType<ModelManagerBase>();
         loadingOverlay = FindFirstObjectByType<LogoLoadingOverlay>();
         spriteManager = FindFirstObjectByType<SpriteManager>();
+        puzzleManager = FindFirstObjectByType<PuzzleManager>();
+        actionManager = FindFirstObjectByType<ActionManager>();
+
         particlesGameobject.SetActive(true);
         particles = particlesGameobject.GetComponent<ParticleSystem>();
     }
@@ -119,6 +125,9 @@ public abstract class SceneChangerBase : MonoBehaviour
     {
         if (scene == null || scene == currentScene) return;
 
+        // CALL EXIT ACTION
+        actionManager.ActionParser(currentScene.ExitAction);
+
         currentScene = scene;
         LoadSceneElements(new List<SceneElement>(scene.SceneElements.Values));
         if (interactionHandler != null)
@@ -138,6 +147,7 @@ public abstract class SceneChangerBase : MonoBehaviour
                 videoMaterial.mainTextureOffset = new Vector2(scene.XOffset, scene.YOffset);
                 videoPlayer.url = scene.Source;
                 onLoaded?.Invoke();
+                actionManager.ActionParser(scene.EnterAction);
             }
             else if (scene.Type == Scene.MediaType.Photo)
             {
@@ -147,6 +157,7 @@ public abstract class SceneChangerBase : MonoBehaviour
                     photoMaterial.mainTextureOffset = new Vector2(scene.XOffset, scene.YOffset);
                     SwitchToFoto();
                     onLoaded?.Invoke();
+                    actionManager.ActionParser(scene.EnterAction);
                 }));
             }
             else
@@ -191,6 +202,7 @@ public abstract class SceneChangerBase : MonoBehaviour
                 case SceneElementArrow arrow: LoadArrow(arrow); break;
                 case SceneElementModel model: LoadModel(model); break;
                 case SceneElementSprite sprite: LoadSprite(sprite); break;
+                case SceneElementPuzzle puzzle: LoadPuzzlePiece(puzzle); break;
             }
         }
     }
@@ -212,7 +224,7 @@ public abstract class SceneChangerBase : MonoBehaviour
         dp.xRotOffset = sceneElement.xRotationOffset;
 
         var interactable = text.GetComponent<Interactable>();
-        interactable.OnInteract.AddListener(() => ActionParser(sceneElement.action));
+        interactable.OnInteract.AddListener(() => actionManager.ActionParser(sceneElement.action));
 
         return text.gameObject;
     }
@@ -267,7 +279,7 @@ public abstract class SceneChangerBase : MonoBehaviour
         dp.xRotOffset = sceneElement.xRotationOffset;
 
         var interactableArrow = arrow.GetComponent<InteractableArrow>();
-        interactableArrow.OnInteract.AddListener(() => ActionParser(sceneElement.action));
+        interactableArrow.OnInteract.AddListener(() => actionManager.ActionParser(sceneElement.action));
 
         interactableArrow.color = ColorUtility.TryParseHtmlString(sceneElement.color, out Color unityColor) ? unityColor : Color.white;
 
@@ -296,7 +308,7 @@ public abstract class SceneChangerBase : MonoBehaviour
         InteractableModel interactableModel = dp.GetComponent<InteractableModel>();
         interactableModel.OnInteract.AddListener(() =>
         {
-            ActionParser(sceneElement.action);
+            actionManager.ActionParser(sceneElement.action);
         });
 
         return dp.gameObject;
@@ -316,25 +328,29 @@ public abstract class SceneChangerBase : MonoBehaviour
         dp.distance = sceneElement.distance;
         dp.xRotOffset = sceneElement.xRotationOffset;
 
-        sprite.OnInteract.AddListener(() => ActionParser(sceneElement.action));
+        sprite.OnInteract.AddListener(() => actionManager.ActionParser(sceneElement.action));
 
         return sprite.gameObject;
     }
 
-    public void ActionParser(string action)
+    public virtual GameObject LoadPuzzlePiece(SceneElementPuzzle sceneElement)
     {
-        string pattern = @"toScene\(([^,]*?)(?:,(-?\d))*\)";
-        Match match = Regex.Match(action, pattern);
-        if (match.Success)
-        {
-            string sceneName = match.Groups[1].Value;
-            int animationIndex = -1;
-            if (match.Groups.Count > 2 && match.Groups[2].Success)
-                int.TryParse(match.Groups[2].Value.Trim(), out animationIndex);
+        var piece = puzzleManager.GetPiece(sceneElement.index);
+        if (piece.texture == null) return null;
 
-            if (sceneManager.sceneList.TryGetValue(sceneName, out Scene scene) && scene != null)
-                SwitchSceneAnimation(scene, animationIndex);
-        }
+        var texture = piece.texture;
+
+        var pieceElement = Instantiate(puzzlePiecePrefab, sceneElementsContainer.transform).GetComponent<InteractablePuzzle>();
+        pieceElement.texture = texture;
+        pieceElement.id = sceneElement.index;
+
+        var dp = pieceElement.GetComponent<DomePosition>();
+        dp.position.x = sceneElement.x;
+        dp.position.y = sceneElement.y;
+        dp.distance = sceneElement.distance;
+        dp.xRotOffset = sceneElement.xRotationOffset;
+
+        return pieceElement.gameObject;
     }
 
     public void TransitionLogo(Action<Action> sceneLoaded, int logoIndex)

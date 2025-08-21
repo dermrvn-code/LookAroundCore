@@ -1,5 +1,20 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+public struct Piece
+{
+    public int id;
+    public bool isCollected;
+    public Texture2D texture;
+
+    public Piece(int id, Texture2D texture)
+    {
+        this.id = id;
+        this.texture = texture;
+        isCollected = false;
+    }
+}
 
 public class PuzzleManager : MonoBehaviour
 {
@@ -13,7 +28,14 @@ public class PuzzleManager : MonoBehaviour
     private int pieceWidth;
     private int pieceHeight;
 
-    public List<Texture2D> pieces = new List<Texture2D>();
+    List<Piece> pieces = new List<Piece>();
+
+    public bool isActive = false;
+    public bool isCompleted = false;
+
+    public Action onCompleted;
+
+
 
     void Awake()
     {
@@ -21,39 +43,95 @@ public class PuzzleManager : MonoBehaviour
         puzzleDisplay.SetActive(false);
     }
 
-    public void SetupPuzzle(Texture2D newMainTex)
+    public void SetupPuzzle(Texture2D newMainTex, int pieceAmount, Action finished = null)
     {
-        // Make a readable copy of the main texture
-        mainTex = MakeTextureReadable(newMainTex);
+        if (pieceAmount % 2 != 0)
+        {
+            Debug.Log("Pieces were odd, incrementing to " + (pieceAmount + 1));
+            pieceAmount++;
+        }
 
+        if (finished != null)
+        {
+            onCompleted = finished;
+        }
+
+        mainTex = newMainTex;
         puzzleDisplay.image = mainTex;
+        puzzleDisplay.LoadImage();
 
-        SetupGrid();
+        GetBestGrid(mainTex.width, mainTex.height, pieceAmount);
         CreateMask();
         CreatePiecesFromMainTex();
+    }
 
-        // Example: reveal the first piece
-        TogglePiece(0);
-
+    public void StartPuzzle()
+    {
         puzzleDisplay.SetActive(true);
+        isActive = true;
+        isCompleted = false;
     }
 
-    Texture2D MakeTextureReadable(Texture2D source)
+    public void ResetPuzzle()
     {
-        Texture2D readableTex = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
-        readableTex.filterMode = source.filterMode;
-        readableTex.wrapMode = source.wrapMode;
-        Graphics.CopyTexture(source, readableTex);
-        return readableTex;
+        isCompleted = false;
+        isActive = false;
+        puzzleDisplay.SetActive(false);
+
+        for (int i = 0; i < pieces.Count; i++)
+        {
+            Piece piece = pieces[i];
+            piece.isCollected = false;
+            pieces[i] = piece;
+
+            TogglePiece(i, true, false);
+        }
     }
 
-    void SetupGrid()
+    public void RestartPuzzle()
     {
-        cols = Mathf.CeilToInt(Mathf.Sqrt(totalPieces));
-        rows = Mathf.CeilToInt((float)totalPieces / cols);
-        pieceWidth = mainTex.width / cols;
-        pieceHeight = mainTex.height / rows;
+        ResetPuzzle();
+        StartPuzzle();
     }
+
+    public bool CheckCompleted()
+    {
+        foreach (Piece piece in pieces)
+        {
+            if (!piece.isCollected) return false;
+        }
+        isCompleted = true;
+        return true;
+    }
+
+    public void GetBestGrid(int width, int height, int pieces)
+    {
+        float aspect = width / height;
+        int bestCols = 1, bestRows = pieces;
+        float bestDiff = float.MaxValue;
+
+        for (int cols = 1; cols <= pieces; cols++)
+        {
+            if (pieces % cols != 0) continue; // ensure whole rows
+            int rows = pieces / cols;
+
+            float gridAspect = cols / rows;
+            float diff = Mathf.Abs(aspect - gridAspect);
+
+            if (diff < bestDiff)
+            {
+                bestDiff = diff;
+                bestCols = cols;
+                bestRows = rows;
+            }
+        }
+        cols = bestCols;
+        rows = bestRows;
+
+        pieceWidth = width / cols;
+        pieceHeight = height / rows;
+    }
+
 
     void CreateMask()
     {
@@ -96,13 +174,49 @@ public class PuzzleManager : MonoBehaviour
                 pieceTex.SetPixels(pixels);
                 pieceTex.Apply();
 
-                pieces.Add(pieceTex);
+                pieces.Add(new Piece(pieceCount, pieceTex));
                 pieceCount++;
             }
         }
     }
 
-    public void TogglePiece(int index)
+    public bool CollectPiece(int index)
+    {
+        if (!CanCollect(index)) return false;
+
+        Piece piece = pieces[index];
+        piece.isCollected = true;
+        pieces[index] = piece;
+
+        TogglePiece(index);
+
+        if (CheckCompleted())
+        {
+            onCompleted?.Invoke();
+        }
+        return true;
+    }
+
+    public bool CanCollect(int index)
+    {
+        if (!isActive || isCompleted) return false;
+
+        if (index < 0 || index >= pieces.Count) return false;
+
+        Piece piece = pieces[index];
+        if (piece.isCollected) return false;
+
+        return true;
+    }
+
+    public Piece GetPiece(int index)
+    {
+        if (index < 0 || index >= pieces.Count) return default;
+        return pieces[index];
+    }
+
+
+    void TogglePiece(int index, bool overwrite = false, bool overwriteValue = false)
     {
         if (index < 0 || index >= pieces.Count) return;
 
@@ -115,6 +229,11 @@ public class PuzzleManager : MonoBehaviour
         bool isVisible = current.r > 0.5f;
 
         Color newColor = isVisible ? Color.black : Color.white;
+
+        if (overwrite)
+        {
+            newColor = overwriteValue ? Color.white : Color.black;
+        }
 
         // Update mask for this piece
         for (int y = 0; y < pieceHeight; y++)

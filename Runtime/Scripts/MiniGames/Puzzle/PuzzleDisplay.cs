@@ -19,9 +19,6 @@ public class PuzzleDisplay : MonoBehaviour
             targetCamera = Camera.main;
         }
         PositionAtTopBorder();
-
-        FitImage(puzzleMaterial, image);
-        FitImage(puzzleMaterialMissing, image);
     }
 
     void FitImage(Material material, Texture2D image)
@@ -38,6 +35,12 @@ public class PuzzleDisplay : MonoBehaviour
         material.SetFloat("_TexHeight", aspectHeight);
 
         PositionAtTopBorder();
+    }
+
+    public void LoadImage()
+    {
+        FitImage(puzzleMaterial, image);
+        FitImage(puzzleMaterialMissing, image);
     }
 
     void PositionAtTopBorder()
