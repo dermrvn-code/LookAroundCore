@@ -3,36 +3,56 @@ Shader "Unlit/Pano360Shader"
    Properties
    {
        _MainTex ("Base (RGB)", 2D) = "white" {}
-       _Color ("Main Color", Color) = (1,1,1,0.5)
-   }   SubShader 
+       _Color ("Main Color", Color) = (1,1,1,1)
+       _OffsetX ("Horizontal Offset", Range(-1,1)) = 0
+       _OffsetY ("Vertical Offset", Range(-1,1)) = 0
+   }
+
+   SubShader 
    {
-      Tags { "RenderType" = "Opaque" }      //This is used to print the texture inside of the sphere
-      Cull Off      CGPROGRAM
+      Tags { "RenderType" = "Opaque" }
+      Cull Off
+
+      CGPROGRAM
       #pragma surface surf SimpleLambert
+
       half4 LightingSimpleLambert (SurfaceOutput s, half3 lightDir, half atten)
       {
          half4 c = half4(0, 0, 0, 1);
          c.rgb = s.Albedo;
          return c;
       }
-      
+
       sampler2D _MainTex;
+      fixed4 _Color;
+      float _OffsetX;
+      float _OffsetY;
+
       struct Input
       {
          float2 uv_MainTex;
-         float4 myColor : COLOR;
       };
- 
-      fixed3 _Color;
+
       void surf (Input IN, inout SurfaceOutput o)
       {
-         //This is used to mirror the image correctly when printing it inside of the sphere
-         IN.uv_MainTex.x = 1 - IN.uv_MainTex.x;
-         fixed3 result = tex2D(_MainTex, IN.uv_MainTex)*_Color;
-         o.Albedo = result.rgb;
-         o.Alpha = 1;
+         // Start with original UVs
+         float2 uv = IN.uv_MainTex;
+
+         // Mirror horizontally for inside-sphere projection
+         uv.x = 1 - uv.x;
+
+         // Apply user offsets
+         uv.x = frac(uv.x + _OffsetX); // wrap horizontally
+         uv.y = clamp(uv.y + _OffsetY, 0, 1); // clamp vertically to avoid distortion
+
+         fixed4 tex = tex2D(_MainTex, uv);
+         tex *= _Color;
+
+         o.Albedo = tex.rgb;
+         o.Alpha  = tex.a;
       }
       ENDCG
    }
+
    Fallback "Diffuse"
 }

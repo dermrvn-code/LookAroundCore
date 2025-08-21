@@ -12,7 +12,6 @@ public class InteractableText : Interactable
         TryGetComponent<TMP_Text>(out text);
     }
 
-
     public override void Highlight()
     {
         if (text != null) text.fontStyle = FontStyles.Underline;

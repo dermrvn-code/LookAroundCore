@@ -36,6 +36,16 @@ public class Scene
         get => _yOffset;
     }
 
+    public string EnterAction
+    {
+        get => _enterAction;
+    }
+
+    public string ExitAction
+    {
+        get => _exitAction;
+    }
+
     [SerializeField]
     MediaType _type;
     [SerializeField]
@@ -50,7 +60,10 @@ public class Scene
     [SerializeField]
     float _yOffset;
 
-    public Scene(MediaType type, string name, string source, Dictionary<int, SceneElement> sceneElements, bool isStartScene, float xOffset = 0, float yOffset = 0)
+    string _enterAction;
+    string _exitAction;
+
+    public Scene(MediaType type, string name, string source, Dictionary<int, SceneElement> sceneElements, bool isStartScene, float xOffset = 0, float yOffset = 0, string enterAction = "", string exitAction = "")
     {
         _type = type;
         _name = name;
@@ -59,6 +72,8 @@ public class Scene
         _isStartScene = isStartScene;
         _xOffset = xOffset;
         _yOffset = yOffset;
+        _enterAction = enterAction;
+        _exitAction = exitAction;
     }
 
     public override string ToString()
