@@ -141,10 +141,11 @@ MonoBehaviour:
   iconName: 
   textContent: 
   closedScale: {x: 1, y: 1, z: 1}
-  scale: {x: 3, y: 3}
+  scale: {x: 4, y: 4}
   isOpen: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   tmptext: {fileID: 4516959303492012106}
+  spriteRenderer: {fileID: 8250442890953714212}
 --- !u!114 &1212589620443345445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,7 +409,7 @@ MonoBehaviour:
   m_fontSizeMin: 3
   m_fontSizeMax: 9
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0

@@ -11,7 +11,7 @@ public class TextBox : Hoverable
     [SerializeField]
     GameObject background;
     public SpriteRenderer icon;
-    public string iconName;
+
     public string textContent;
 
     [SerializeField]
@@ -26,6 +26,8 @@ public class TextBox : Hoverable
 
     [SerializeField]
     TMP_Text tmptext;
+    [SerializeField]
+    SpriteRenderer spriteRenderer;
     Color textColor = Color.clear;
 
     bool stayOpen = false;
@@ -70,12 +72,13 @@ public class TextBox : Hoverable
         tmptext.text = _text;
     }
 
-    public void SetIcon(Sprite icon, string name)
+    public void SetIcon(Sprite icon)
     {
         if (this.icon != null)
         {
             this.icon.sprite = icon;
-            this.iconName = name;
+            spriteRenderer.sprite = icon;
+            spriteRenderer.color = textColor;
         }
     }
 

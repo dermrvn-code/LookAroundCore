@@ -68,7 +68,6 @@ public class LogoLoadingOverlay : MonoBehaviour
 
     public void FadeIn()
     {
-        Debug.Log("Fade in");
         StartCoroutine(FadeInCoroutine());
     }
 

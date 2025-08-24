@@ -36,7 +36,7 @@ public abstract class SceneChangerBase : MonoBehaviour
     [SerializeField] protected GameObject spritePrefab;
     [SerializeField] protected GameObject puzzlePiecePrefab;
 
-    protected Sprite info, warning, question, play;
+    [SerializeField] protected Sprite info, warning, question, play;
 
 
     public virtual void Awake()
@@ -234,11 +234,13 @@ public abstract class SceneChangerBase : MonoBehaviour
         var textbox = Instantiate(textboxPrefab, sceneElementsContainer.transform).GetComponent<TextBox>();
 
         var dp = textbox.GetComponent<DomePosition>();
-
         dp.position.x = sceneElement.x;
         dp.position.y = sceneElement.y;
         dp.distance = sceneElement.distance;
         dp.xRotOffset = sceneElement.xRotationOffset;
+
+        ColorUtility.TryParseHtmlString(sceneElement.color, out Color bgColor);
+        textbox.SetColor(bgColor);
 
         Sprite sprite = sceneElement.icon switch
         {
@@ -248,11 +250,8 @@ public abstract class SceneChangerBase : MonoBehaviour
             "play" => play,
             _ => null
         };
-        textbox.SetIcon(sprite, sceneElement.icon);
-
-        ColorUtility.TryParseHtmlString(sceneElement.color, out Color bgColor);
-        textbox.SetColor(bgColor);
-        
+        textbox.SetIcon(sprite);
+        textbox.SetText(sceneElement.text);
 
         return textbox.gameObject;
     }
