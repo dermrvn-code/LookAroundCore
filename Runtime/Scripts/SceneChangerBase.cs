@@ -231,26 +231,14 @@ public abstract class SceneChangerBase : MonoBehaviour
 
     public virtual GameObject LoadTextboxElement(SceneElementTextbox sceneElement)
     {
-        var text = Instantiate(textboxPrefab, sceneElementsContainer.transform);
-        var tmptext = text.GetComponentInChildren<TMP_Text>();
-        var spriteRenderer = text.GetComponentInChildren<SpriteRenderer>();
-        var meshRenderer = text.GetComponentInChildren<MeshRenderer>();
-        var dp = text.GetComponent<DomePosition>();
+        var textbox = Instantiate(textboxPrefab, sceneElementsContainer.transform).GetComponent<TextBox>();
 
-        ColorUtility.TryParseHtmlString(sceneElement.color, out Color bgColor);
-
-        float luminance = 0.299f * bgColor.r + 0.587f * bgColor.g + 0.114f * bgColor.b;
-        Color bestTextColor = luminance > 0.7f ? Color.black : Color.white;
-
-        tmptext.text = sceneElement.text;
-        tmptext.color = bestTextColor;
-        spriteRenderer.color = bestTextColor;
+        var dp = textbox.GetComponent<DomePosition>();
 
         dp.position.x = sceneElement.x;
         dp.position.y = sceneElement.y;
         dp.distance = sceneElement.distance;
         dp.xRotOffset = sceneElement.xRotationOffset;
-        meshRenderer.material.color = bgColor;
 
         Sprite sprite = sceneElement.icon switch
         {
@@ -260,10 +248,13 @@ public abstract class SceneChangerBase : MonoBehaviour
             "play" => play,
             _ => null
         };
-        if (sprite != null)
-            spriteRenderer.sprite = sprite;
+        textbox.SetIcon(sprite, sceneElement.icon);
 
-        return text.gameObject;
+        ColorUtility.TryParseHtmlString(sceneElement.color, out Color bgColor);
+        textbox.SetColor(bgColor);
+        
+
+        return textbox.gameObject;
     }
 
     public virtual GameObject LoadArrow(SceneElementArrow sceneElement)

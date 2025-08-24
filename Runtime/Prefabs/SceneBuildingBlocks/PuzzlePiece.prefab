@@ -51,6 +51,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   texture: {fileID: 0}
+  active: 1
   id: 0
 --- !u!114 &4619757608244430927
 MonoBehaviour:
@@ -4912,6 +4913,7 @@ GameObject:
   - component: {fileID: 6919775988805689881}
   - component: {fileID: 5720208478033690046}
   - component: {fileID: 1829813676757450311}
+  - component: {fileID: 1458973779861543397}
   m_Layer: 0
   m_Name: Image
   m_TagString: Untagged
@@ -5006,3 +5008,24 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
+--- !u!65 &1458973779861543397
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7509971422275637890}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
