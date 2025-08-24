@@ -251,6 +251,7 @@ public abstract class SceneChangerBase : MonoBehaviour
             _ => null
         };
         textbox.SetIcon(sprite);
+        textbox.iconName = sceneElement.icon;
         textbox.SetText(sceneElement.text);
 
         return textbox.gameObject;

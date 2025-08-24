@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8981634258157351342}
   - component: {fileID: 8250442890953714212}
   m_Layer: 0
-  m_Name: alert-circle
+  m_Name: icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,14 +138,13 @@ MonoBehaviour:
   text: {fileID: 1134340416443874462}
   background: {fileID: 8027590173567883576}
   icon: {fileID: 8250442890953714212}
-  iconName: 
   textContent: 
+  iconName: 
   closedScale: {x: 1, y: 1, z: 1}
   scale: {x: 4, y: 4}
   isOpen: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   tmptext: {fileID: 4516959303492012106}
-  spriteRenderer: {fileID: 8250442890953714212}
 --- !u!114 &1212589620443345445
 MonoBehaviour:
   m_ObjectHideFlags: 0

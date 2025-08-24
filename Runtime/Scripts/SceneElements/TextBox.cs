@@ -13,6 +13,7 @@ public class TextBox : Hoverable
     public SpriteRenderer icon;
 
     public string textContent;
+    public string iconName;
 
     [SerializeField]
     Vector3 closedScale = Vector3.one;
@@ -26,8 +27,6 @@ public class TextBox : Hoverable
 
     [SerializeField]
     TMP_Text tmptext;
-    [SerializeField]
-    SpriteRenderer spriteRenderer;
     Color textColor = Color.clear;
 
     bool stayOpen = false;
@@ -72,13 +71,14 @@ public class TextBox : Hoverable
         tmptext.text = _text;
     }
 
+    [SerializeField] Sprite iconSprite;
     public void SetIcon(Sprite icon)
     {
         if (this.icon != null)
         {
+            iconSprite = icon;
             this.icon.sprite = icon;
-            spriteRenderer.sprite = icon;
-            spriteRenderer.color = textColor;
+            this.icon.color = textColor;
         }
     }
 

@@ -417,6 +417,7 @@ public abstract class SceneManagerBase : MonoBehaviour
             }
             if (se != null)
             {
+                se.list_id = elementId;
                 sceneElements.Add(elementId, se);
                 elementId++;
             }

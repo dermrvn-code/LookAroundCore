@@ -1,3 +1,4 @@
+[System.Serializable]
 public abstract class SceneElement
 {
     public int list_id;
@@ -7,7 +8,7 @@ public abstract class SceneElement
     public int xRotationOffset;
     public string action;
 
-    protected SceneElement(int x = 0, int y = 0, int distance = 0, int xRotationOffset = 0, string action = null)
+    public SceneElement(int x = 0, int y = 0, int distance = 0, int xRotationOffset = 0, string action = null)
     {
         this.x = x;
         this.y = y;
