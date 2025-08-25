@@ -43,7 +43,6 @@ public abstract class SceneManagerBase : MonoBehaviour
     {
         if (currentScenesOverviewPath == path)
         {
-            sceneChanger.ToStartScene();
             return;
         }
         currentScenesOverviewPath = path;
